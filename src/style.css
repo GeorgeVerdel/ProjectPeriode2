@@ -30,3 +30,8 @@ body {
     text-align: center;
     letter-spacing: 2px;
 }
+
+.ContentBack {
+    background-color: rgb(135, 122, 122);
+    width: 100px;
+}
