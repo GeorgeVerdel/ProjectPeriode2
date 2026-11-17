@@ -1,15 +1,665 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Call Of Duty</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Call of Duty — Operations Briefing</title>
+<meta name="description" content="A fan-made Call of Duty concept site with a promo loop, interactive game lineup, features and updates." />
+<style>
+  :root{
+    --bg:#0a0d0e;
+    --bg-2:#0e1214;
+    --panel:#121719;
+    --panel-2:#171d20;
+    --line:#293236;
+    --line-strong:#3b484d;
+    --text:#eef2ef;
+    --muted:#98a4a1;
+    --accent:#ff5a36;
+    --accent-rgb:255,90,54;
+    --signal:#d9ff43;
+    --signal-rgb:217,255,67;
+    --max:1140px;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 600px at 78% -10%, rgba(var(--accent-rgb),.10), transparent 60%),
+      radial-gradient(800px 500px at 0% 30%, rgba(var(--signal-rgb),.05), transparent 60%),
+      linear-gradient(180deg,var(--bg-2),var(--bg));
+    color:var(--text);
+    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:48px 48px;
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);
+    mask-image:linear-gradient(180deg,#000,transparent 85%);
+    pointer-events:none;z-index:0;
+  }
+
+  :focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+  .skip{position:absolute;left:-9999px;top:12px;z-index:100;padding:10px 14px;background:var(--signal);color:#0a0d0e;text-decoration:none;font-weight:700}
+  .skip:focus{left:12px}
+  .wrap{width:min(100% - 32px,var(--max));margin-inline:auto;position:relative;z-index:1}
+
+  /* ---------- header ---------- */
+  .site-header{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+    padding:16px clamp(16px,4vw,40px);
+    border-bottom:1px solid var(--line);
+    background:rgba(10,13,14,.82);
+    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px);
+    transition:border-color .25s,background .25s;
+  }
+  .site-header.is-scrolled{border-color:var(--line-strong);background:rgba(10,13,14,.94)}
+  .brand{display:inline-flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}
+  .brand-mark{
+    display:grid;place-items:center;width:38px;height:38px;
+    background:var(--accent);color:#0a0d0e;
+    font-weight:900;font-size:13px;letter-spacing:-.04em;
+    clip-path:polygon(0 0,100% 0,100% 72%,72% 100%,0 100%);
+  }
+  .brand-name{font-weight:800;letter-spacing:.16em;font-size:13px}
+  .site-nav{display:flex;gap:clamp(12px,2.4vw,28px);flex-wrap:wrap}
+  .site-nav a{
+    color:var(--muted);text-decoration:none;font-size:12px;
+    letter-spacing:.1em;text-transform:uppercase;
+    padding:6px 0;border-bottom:1px solid transparent;
+    transition:color .2s,border-color .2s;
+  }
+  .site-nav a:hover,.site-nav a:focus-visible{color:var(--text);border-color:var(--accent)}
+
+  /* ---------- intro + promo loop ---------- */
+  .intro{padding:clamp(32px,5vw,64px) 0 clamp(32px,5vw,56px);border-bottom:1px solid var(--line)}
+  .eyebrow,.kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);font-weight:700}
+  .lede{max-width:58ch;color:var(--muted);font-size:clamp(15px,1.6vw,18px)}
+
+  .stage{
+    --d:12s;
+    position:relative;width:min(100%,960px);margin-inline:auto;
+    aspect-ratio:16/9;overflow:hidden;
+    background:#080b0c;border:1px solid var(--line-strong);
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .grid{
+    position:absolute;inset:-25%;
+    background-image:
+      linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:44px 44px;
+    transform:perspective(600px) rotateX(58deg) scale(1.6);
+    transform-origin:center 72%;opacity:.8;
+  }
+  .glow{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 72% 32%,rgba(var(--accent-rgb),.30),transparent 66%),
+      radial-gradient(50% 60% at 8% 82%,rgba(var(--signal-rgb),.10),transparent 70%);
+  }
+  .slash{
+    position:absolute;top:-20%;left:60%;width:11%;height:140%;
+    background:var(--accent);transform:skewX(-22deg);opacity:.9;
+  }
+  .scan{
+    position:absolute;left:0;right:0;top:-2%;height:2px;
+    background:linear-gradient(90deg,transparent,var(--signal),transparent);
+    opacity:0;filter:blur(.5px);
+  }
+  .vig{
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse at center,transparent 38%,rgba(0,0,0,.78) 100%);
+  }
+  .content{
+    position:absolute;inset:0;z-index:2;
+    display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+    gap:clamp(8px,1.6cqw,18px);
+    padding:clamp(20px,6cqw,64px);
+    container-type:inline-size;
+  }
+  .content .kicker{font-size:clamp(10px,1.7cqw,15px);letter-spacing:.3em}
+  .title{
+    position:relative;margin:0;
+    font-family:"Arial Narrow",Impact,Arial,sans-serif;
+    font-size:clamp(34px,9.5cqw,96px);
+    line-height:.9;letter-spacing:-.01em;text-transform:uppercase;
+    text-shadow:0 8px 34px rgba(0,0,0,.7);
+  }
+  .title::before,.title::after{
+    content:attr(data-text);position:absolute;inset:0;
+    opacity:0;mix-blend-mode:screen;
+  }
+  .title::before{color:#ff3b1f;transform:translate(-3px,1px)}
+  .title::after{color:var(--signal);transform:translate(3px,-1px)}
+  .sub{
+    display:flex;align-items:center;gap:10px;
+    font-size:clamp(12px,2.3cqw,22px);letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  }
+  .sub::before{content:"";width:4px;height:1.1em;background:var(--accent)}
+  .tagline{
+    font-family:Consolas,"Courier New",monospace;
+    font-size:clamp(11px,2.3cqw,21px);letter-spacing:.1em;color:var(--muted);
+  }
+  .tagline span{
+    display:inline-block;white-space:nowrap;overflow:hidden;width:23ch;
+    border-right:2px solid var(--signal);vertical-align:bottom;
+  }
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .chip{
+    padding:6px 10px;border:1px solid rgba(255,255,255,.22);
+    background:rgba(0,0,0,.35);
+    font-size:clamp(9px,1.4cqw,12px);letter-spacing:.16em;text-transform:uppercase;
+  }
+  .cta{margin-top:8px}
+  .cta span{
+    display:inline-block;padding:clamp(11px,1.8cqw,17px) clamp(20px,3.4cqw,34px);
+    background:var(--accent);color:#080b0c;font-weight:900;
+    font-size:clamp(12px,2cqw,19px);letter-spacing:.18em;text-transform:uppercase;
+    clip-path:polygon(0 0,100% 0,100% 70%,94% 100%,0 100%);
+  }
+  .progress{position:absolute;left:0;bottom:0;width:100%;height:3px;background:rgba(255,255,255,.09);z-index:4}
+  .progress span{display:block;height:100%;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+  .fade{position:absolute;inset:0;background:var(--bg);opacity:0;z-index:5;pointer-events:none}
+
+  .promo-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
+  .promo-controls button{
+    border:1px solid var(--line-strong);background:var(--panel);color:var(--text);
+    padding:9px 16px;font:inherit;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;cursor:pointer;transition:border-color .2s;
+  }
+  .promo-controls button:hover{border-color:var(--accent)}
+  .intro-caption{display:grid;gap:8px;margin-top:24px;max-width:64ch}
+  .intro-caption .lede{margin:0}
+
+  /* ---- promo timeline ---- */
+  .stage.play .grid       { animation:gridIn    var(--d) linear infinite }
+  .stage.play .glow       { animation:gridIn    var(--d) linear infinite }
+  .stage.play .slash      { animation:slashIn   var(--d) linear infinite }
+  .stage.play .scan       { animation:scan      var(--d) linear infinite }
+  .stage.play .kicker     { animation:kickerIn  var(--d) linear infinite }
+  .stage.play .title      { animation:titleIn   var(--d) linear infinite }
+  .stage.play .title::before{ animation:glitchA var(--d) linear infinite }
+  .stage.play .title::after { animation:glitchB var(--d) linear infinite }
+  .stage.play .sub        { animation:subIn     var(--d) linear infinite }
+  .stage.play .tagline span{ animation:type var(--d) steps(26,end) infinite, caret .5s steps(1,end) infinite }
+  .stage.play .chip:nth-child(1){ animation:chipA var(--d) linear infinite }
+  .stage.play .chip:nth-child(2){ animation:chipB var(--d) linear infinite }
+  .stage.play .chip:nth-child(3){ animation:chipC var(--d) linear infinite }
+  .stage.play .cta        { animation:ctaIn var(--d) linear infinite }
+  .stage.play .cta span   { animation:ctaPulse 1.5s ease-in-out infinite }
+  .stage.play .progress span{ animation:progress var(--d) linear infinite }
+  .stage.play .fade       { animation:fade var(--d) linear infinite }
+
+  @keyframes gridIn{0%{opacity:0}4%{opacity:.85}90%{opacity:.85}100%{opacity:0}}
+  @keyframes slashIn{0%{opacity:0;transform:skewX(-22deg) translateX(-60px)}8%{opacity:.9;transform:skewX(-22deg) translateX(0)}88%{opacity:.9}96%{opacity:0}}
+  @keyframes scan{0%{top:-2%;opacity:0}2%{opacity:.9}11%{top:102%;opacity:0}100%{top:102%;opacity:0}}
+  @keyframes kickerIn{0%,6%{opacity:0;transform:translateX(-18px)}11%,90%{opacity:1;transform:translateX(0)}96%,100%{opacity:0}}
+  @keyframes titleIn{0%,13%{opacity:0;clip-path:inset(48% 0 48% 0)}24%,90%{opacity:1;clip-path:inset(0 0 0 0)}96%,100%{opacity:0}}
+  @keyframes glitchA{0%,22%{opacity:0}23%{opacity:.85;transform:translate(-4px,2px)}24.5%{opacity:0}25.5%{opacity:.7;transform:translate(3px,-2px)}26.5%,100%{opacity:0}}
+  @keyframes glitchB{0%,22.4%{opacity:0}23.4%{opacity:.8;transform:translate(4px,-1px)}24.8%{opacity:0}25.8%{opacity:.65;transform:translate(-3px,2px)}26.8%,100%{opacity:0}}
+  @keyframes subIn{0%,27%{opacity:0;transform:translateY(16px)}35%,90%{opacity:1;transform:translateY(0)}96%,100%{opacity:0}}
+  @keyframes type{0%,37%{width:0}53%,94%{width:23ch}100%{width:0}}
+  @keyframes caret{0%,50%{border-color:var(--signal)}51%,100%{border-color:transparent}}
+  @keyframes chipA{0%,48%{opacity:0;transform:translateY(12px) scale(.9)}55%,90%{opacity:1;transform:translateY(0) scale(1)}96%,100%{opacity:0}}
+  @keyframes chipB{0%,51%{opacity:0;transform:translateY(12px) scale(.9)}58%,90%{opacity:1;transform:translateY(0) scale(1)}96%,100%{opacity:0}}
+  @keyframes chipC{0%,54%{opacity:0;transform:translateY(12px) scale(.9)}61%,90%{opacity:1;transform:translateY(0) scale(1)}96%,100%{opacity:0}}
+  @keyframes ctaIn{0%,62%{opacity:0;transform:scale(.88)}70%,88%{opacity:1;transform:scale(1)}95%,100%{opacity:0;transform:scale(1.04)}}
+  @keyframes ctaPulse{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.45)}70%,100%{box-shadow:0 0 0 16px rgba(var(--accent-rgb),0)}}
+  @keyframes progress{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+  @keyframes fade{0%{opacity:1}4%{opacity:0}94%{opacity:0}99%,100%{opacity:1}}
+
+  /* ---------- sections ---------- */
+  .section{padding:clamp(56px,8vw,96px) 0;border-bottom:1px solid var(--line)}
+  .section--alt{background:linear-gradient(180deg,rgba(255,255,255,.015),transparent)}
+  .section-head{display:grid;gap:10px;margin-bottom:36px}
+  .section-head h2{
+    margin:0;
+    font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+    font-size:clamp(28px,4.5vw,46px);
+    line-height:1;letter-spacing:.01em;text-transform:uppercase;
+  }
+  .section-sub{max-width:62ch;margin:0;color:var(--muted)}
+
+  /* ---------- interactieve balk ---------- */
+  .game-bar{
+    display:flex;gap:6px;overflow-x:auto;
+    border-bottom:1px solid var(--line);
+    scrollbar-width:thin;
+  }
+  .game-tab{
+    flex:0 0 auto;position:relative;
+    appearance:none;border:1px solid transparent;border-bottom:0;
+    background:transparent;color:var(--muted);cursor:pointer;
+    padding:14px 18px;
+    font:700 12px/1 "Segoe UI",Arial,sans-serif;
+    letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
+    transition:color .2s,background .2s,border-color .2s;
+  }
+  .game-tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
+  .game-tab[aria-selected="true"]{color:var(--text);border-color:var(--line);background:var(--panel)}
+  .game-tab[aria-selected="true"]::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);
+  }
+
+  .game-panel[hidden]{display:none}
+  .game-panel:not([hidden]){
+    display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,.8fr);
+    border:1px solid var(--line);border-top:0;
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    animation:panelIn .32s ease both;
+  }
+  @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .panel-main{min-width:0}
+  .panel-art{
+    position:relative;height:170px;overflow:hidden;
+    background:linear-gradient(135deg,rgba(var(--c1),.30),rgba(var(--c2),.10)),#0c1012;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-art::before{
+    content:"";position:absolute;inset:-30% -10% auto auto;
+    width:78%;height:190%;transform:rotate(22deg);
+    background:linear-gradient(90deg,transparent,rgba(var(--c1),.22),transparent);
+  }
+  .panel-art::after{
+    content:"";position:absolute;width:190px;height:190px;
+    right:-45px;top:-60px;border:1px solid rgba(255,255,255,.12);border-radius:50%;
+    box-shadow:0 0 0 24px rgba(255,255,255,.03),0 0 0 48px rgba(255,255,255,.02);
+  }
+  .panel-index{
+    position:absolute;left:20px;bottom:-16px;
+    font:800 84px/1 "Arial Narrow",Arial,sans-serif;
+    color:rgba(255,255,255,.09);letter-spacing:-.06em;
+  }
+  .panel-text{padding:clamp(20px,3vw,34px)}
+  .panel-tag{
+    margin:0 0 8px;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--signal);font-weight:700;
+  }
+  .panel-text h3{
+    margin:0 0 10px;
+    font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+    font-size:clamp(26px,3.4vw,40px);line-height:1;text-transform:uppercase;
+  }
+  .panel-desc{margin:0;color:var(--muted);font-size:15px;max-width:58ch}
+  .panel-facts{display:flex;gap:24px;flex-wrap:wrap;margin-top:22px}
+  .fact{border-left:2px solid var(--accent);padding-left:10px}
+  .fact span{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .fact strong{font-size:14px;font-weight:700}
+
+  .panel-side{
+    padding:clamp(20px,3vw,34px);
+    border-left:1px solid var(--line);
+    background:rgba(0,0,0,.22);
+    display:flex;flex-direction:column;justify-content:center;gap:12px;
+  }
+  .price-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .price{
+    font:800 clamp(38px,5vw,58px)/1 "Arial Narrow",Arial,sans-serif;
+    letter-spacing:-.02em;color:var(--text);
+  }
+  .price-note{margin:0;font-size:13px;color:var(--muted)}
+  .panel-side .btn{margin-top:6px;align-self:flex-start}
+  .panel--blackops{--c1:255,90,54;--c2:255,180,60}
+  .panel--modern{--c1:90,140,255;--c2:120,220,255}
+  .panel--spectre{--c1:200,80,220;--c2:255,90,120}
+  .panel--warzone{--c1:217,255,67;--c2:90,160,120}
+
+  .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .feature{
+    display:grid;grid-template-columns:auto 1fr;gap:16px;
+    padding:22px;border:1px solid var(--line);background:rgba(255,255,255,.02);
+    transition:border-color .25s,background .25s;
+  }
+  .feature:hover{border-color:var(--line-strong);background:rgba(255,255,255,.035)}
+  .feature-num{font:800 13px/1.6 "Arial Narrow",Arial,sans-serif;color:var(--accent)}
+  .feature h3{margin:0 0 6px;font-size:16px;text-transform:uppercase;letter-spacing:.06em}
+  .feature p{margin:0;color:var(--muted);font-size:14px}
+
+  .newsletter{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,64px);align-items:center}
+  .newsletter h2{
+    margin:12px 0;
+    font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+    font-size:clamp(30px,5vw,52px);line-height:1;text-transform:uppercase;
+  }
+  .newsletter p{margin:0;color:var(--muted);max-width:46ch}
+  .signup-form{display:flex;flex-wrap:wrap;gap:10px;padding:20px;border:1px solid var(--line);background:var(--panel)}
+  .signup-form label{width:100%;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .signup-form input[type=email]{
+    flex:1 1 240px;min-width:0;padding:14px 16px;
+    background:#0b0f10;border:1px solid var(--line-strong);
+    color:var(--text);font:inherit;font-size:15px;outline:none;
+  }
+  .signup-form input[type=email]:focus{border-color:var(--accent)}
+  .btn{
+    display:inline-block;text-align:center;text-decoration:none;
+    appearance:none;border:0;cursor:pointer;padding:14px 22px;
+    font:700 12px/1 "Segoe UI",Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;
+    color:#0a0d0e;background:var(--accent);
+    clip-path:polygon(0 0,100% 0,100% 70%,92% 100%,0 100%);
+    transition:filter .2s,transform .2s;
+  }
+  .btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+  .form-message{width:100%;min-height:1.5em;margin:4px 0 0;font-size:13px;color:var(--muted)}
+  .form-message.is-success{color:var(--signal)}
+  .form-message.is-error{color:#ff8a70}
+
+  .site-footer{padding:28px 0 40px;color:var(--muted);font-size:12px}
+  .footer-inner{display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.is-visible{opacity:1;transform:none}
+
+  @media (max-width:760px){
+    .site-header{flex-wrap:wrap}
+    .newsletter{grid-template-columns:1fr}
+    .game-panel:not([hidden]){grid-template-columns:1fr}
+    .panel-side{border-left:0;border-top:1px solid var(--line)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+    .reveal{opacity:1;transform:none}
+    .stage *,.stage *::before,.stage *::after{animation:none!important}
+    .stage .fade{opacity:0!important}
+    .stage .progress span{transform:scaleX(1)!important}
+  }
+</style>
 </head>
 <body>
-    fdss
-    <div class="Nav">
-        <h1>Call Of Duty</h1>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <a class="brand" href="#main">
+    <span class="brand-mark">COD</span>
+    <span class="brand-name">CALL OF DUTY</span>
+  </a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="#games">Games &amp; Operations</a>
+    <a href="#features">Features</a>
+    <a href="#newsletter">Newsletter</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="intro" aria-labelledby="promo-title">
+    <div class="wrap">
+      <div class="stage play" id="promo">
+        <div class="grid"></div>
+        <div class="glow"></div>
+        <div class="slash"></div>
+        <div class="scan"></div>
+        <div class="content">
+          <div class="kicker">// Incoming transmission</div>
+          <h1 class="title" id="promo-title" data-text="Call of Duty">Call of Duty</h1>
+          <div class="sub">New operation // Spectre</div>
+          <div class="tagline"><span>DROP IN. LOCK IN. WIN.</span></div>
+          <div class="chips">
+            <span class="chip">Tactical</span>
+            <span class="chip">Squads</span>
+            <span class="chip">Live ops</span>
+          </div>
+          <div class="cta"><span>Deploy now &rarr;</span></div>
+        </div>
+        <div class="vig"></div>
+        <div class="progress"><span></span></div>
+        <div class="fade"></div>
+      </div>
+
+      <div class="promo-controls">
+        <button type="button" id="replay">Replay loop</button>
+        <span>12-second 16:9 loop — record with Win+G or OBS.</span>
+      </div>
+
+      <div class="intro-caption">
+        <p class="eyebrow">// Field briefing — 2026</p>
+        <p class="lede">Every second counts. Drop into the fight, master the loadout, and push the frontline forward across the latest operations.</p>
+      </div>
     </div>
+  </section>
+
+  <section class="section" id="games" aria-labelledby="games-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="kicker">01 / The lineup</p>
+        <h2 id="games-title">Games &amp; Operations</h2>
+        <p class="section-sub">From covert campaigns to the last-circle scramble — select a title for intel and pricing.</p>
+      </div>
+
+      <div class="game-bar" role="tablist" aria-label="Games and operations">
+        <button class="game-tab" type="button" role="tab" id="tab-blackops" aria-controls="panel-blackops" aria-selected="true" tabindex="0">Black Ops</button>
+        <button class="game-tab" type="button" role="tab" id="tab-modern" aria-controls="panel-modern" aria-selected="false" tabindex="-1">Modern Warfare</button>
+        <button class="game-tab" type="button" role="tab" id="tab-spectre" aria-controls="panel-spectre" aria-selected="false" tabindex="-1">Operation Spectre</button>
+        <button class="game-tab" type="button" role="tab" id="tab-warzone" aria-controls="panel-warzone" aria-selected="false" tabindex="-1">Warzone</button>
+      </div>
+
+      <div class="game-panel panel--blackops" id="panel-blackops" role="tabpanel" aria-labelledby="tab-blackops" tabindex="0">
+        <div class="panel-main">
+          <div class="panel-art"><span class="panel-index">01</span></div>
+          <div class="panel-text">
+            <p class="panel-tag">Covert operations</p>
+            <h3>Black Ops</h3>
+            <p class="panel-desc">Go behind enemy lines in a campaign built on deception, black sites and choices that don't stay buried. Tight stealth, brutal firefights and a story that keeps rewriting itself.</p>
+            <div class="panel-facts">
+              <div class="fact"><span>Mode</span><strong>Campaign + Multiplayer</strong></div>
+              <div class="fact"><span>Players</span><strong>1–4 co-op</strong></div>
+              <div class="fact"><span>Status</span><strong>Available now</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-side">
+          <span class="price-label">Price</span>
+          <div class="price">&euro;69.99</div>
+          <p class="price-note">Premium edition — digital download.</p>
+          <a class="btn" href="#newsletter">Get the briefing</a>
+        </div>
+      </div>
+
+      <div class="game-panel panel--modern" id="panel-modern" role="tabpanel" aria-labelledby="tab-modern" tabindex="0" hidden>
+        <div class="panel-main">
+          <div class="panel-art"><span class="panel-index">02</span></div>
+          <div class="panel-text">
+            <p class="panel-tag">Tactical campaign</p>
+            <h3>Modern Warfare</h3>
+            <p class="panel-desc">Grounded, precision-driven combat where every doorway matters. Plan the breach, clear the room and extract before the situation turns.</p>
+            <div class="panel-facts">
+              <div class="fact"><span>Mode</span><strong>Campaign + Multiplayer</strong></div>
+              <div class="fact"><span>Players</span><strong>1–4 co-op</strong></div>
+              <div class="fact"><span>Status</span><strong>Available now</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-side">
+          <span class="price-label">Price</span>
+          <div class="price">&euro;69.99</div>
+          <p class="price-note">Premium edition — digital download.</p>
+          <a class="btn" href="#newsletter">Get the briefing</a>
+        </div>
+      </div>
+
+      <div class="game-panel panel--spectre" id="panel-spectre" role="tabpanel" aria-labelledby="tab-spectre" tabindex="0" hidden>
+        <div class="panel-main">
+          <div class="panel-art"><span class="panel-index">03</span></div>
+          <div class="panel-text">
+            <p class="panel-tag">Live operation</p>
+            <h3>Operation Spectre</h3>
+            <p class="panel-desc">A rotating season layered over the fight: new maps, limited modes, weekly challenges and a reward track that changes the meta every few weeks.</p>
+            <div class="panel-facts">
+              <div class="fact"><span>Mode</span><strong>Season pass</strong></div>
+              <div class="fact"><span>Players</span><strong>All platforms</strong></div>
+              <div class="fact"><span>Status</span><strong>Season 04</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-side">
+          <span class="price-label">Price</span>
+          <div class="price">&euro;11.99</div>
+          <p class="price-note">Battle Pass — all season rewards included.</p>
+          <a class="btn" href="#newsletter">Join the operation</a>
+        </div>
+      </div>
+
+      <div class="game-panel panel--warzone" id="panel-warzone" role="tabpanel" aria-labelledby="tab-warzone" tabindex="0" hidden>
+        <div class="panel-main">
+          <div class="panel-art"><span class="panel-index">04</span></div>
+          <div class="panel-text">
+            <p class="panel-tag">Battle royale</p>
+            <h3>Warzone</h3>
+            <p class="panel-desc">Drop into a living map with your squad, loot on the move and fight for the final circle. Rotating zones and contracts keep every match unpredictable.</p>
+            <div class="panel-facts">
+              <div class="fact"><span>Mode</span><strong>Battle royale</strong></div>
+              <div class="fact"><span>Players</span><strong>Squads up to 4</strong></div>
+              <div class="fact"><span>Status</span><strong>Live now</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-side">
+          <span class="price-label">Price</span>
+          <div class="price">Free</div>
+          <p class="price-note">Free-to-play — no purchase needed.</p>
+          <a class="btn" href="#newsletter">Play free</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="kicker">02 / Built for the fight</p>
+        <h2 id="features-title">Features</h2>
+        <p class="section-sub">Mechanics made to reward precision, patience and a squad that moves as one.</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature reveal"><span class="feature-num">01</span><div><h3>Weighted gunplay</h3><p>Readable recoil, deliberate movement and a loadout that rewards practice.</p></div></div>
+        <div class="feature reveal"><span class="feature-num">02</span><div><h3>Dynamic maps</h3><p>Changing sightlines and objectives keep every round from feeling like the last.</p></div></div>
+        <div class="feature reveal"><span class="feature-num">03</span><div><h3>Squad first</h3><p>Revives, callouts and shared objectives make teamwork the real weapon.</p></div></div>
+        <div class="feature reveal"><span class="feature-num">04</span><div><h3>Seasonal rewards</h3><p>Fresh challenges, cosmetics and operations drop on a regular cadence.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="newsletter" aria-labelledby="news-title">
+    <div class="wrap newsletter">
+      <div class="reveal">
+        <p class="kicker">03 / Stay deployed</p>
+        <h2 id="news-title">Get the next briefing</h2>
+        <p>Operation dates, map reveals and drops — straight to your inbox. No noise.</p>
+      </div>
+
+      <form class="signup-form reveal" id="signup" novalidate>
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="operator@example.com" autocomplete="email" aria-describedby="form-message" required />
+        <button class="btn" type="submit">Join the list</button>
+        <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>Fan-made concept. Call of Duty is a trademark of Activision.</span>
+    <span>Built for the briefing.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('is-visible'); });
+  }
+
+  var form = document.getElementById('signup');
+  if (form) {
+    form.addEventListener('submit', function(event){
+      event.preventDefault();
+      var input = document.getElementById('email');
+      var message = document.getElementById('form-message');
+      var value = (input.value || '').trim();
+      var valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+
+      if (!valid) {
+        message.textContent = 'Enter a valid email address to receive the briefing.';
+        message.className = 'form-message is-error';
+        input.setAttribute('aria-invalid', 'true');
+        input.focus();
+        return;
+      }
+
+      message.textContent = 'You are on the list. Stand by for the next drop.';
+      message.className = 'form-message is-success';
+      input.removeAttribute('aria-invalid');
+      form.reset();
+    });
+  }
+
+  var header = document.querySelector('.site-header');
+  function onScroll(){
+    if (!header) return;
+    header.classList.toggle('is-scrolled', window.scrollY > 24);
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  var stage = document.getElementById('promo');
+  var replay = document.getElementById('replay');
+  if (stage && replay) {
+    replay.addEventListener('click', function(){
+      stage.classList.remove('play');
+      void stage.offsetWidth;
+      stage.classList.add('play');
+    });
+  }
+
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.game-tab'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.game-panel'));
+
+  function activateTab(tab, moveFocus){
+    tabs.forEach(function(item){
+      var active = item === tab;
+      item.setAttribute('aria-selected', active ? 'true' : 'false');
+      item.tabIndex = active ? 0 : -1;
+    });
+    panels.forEach(function(panel){
+      panel.hidden = panel.id !== tab.getAttribute('aria-controls');
+    });
+    if (moveFocus) tab.focus();
+  }
+
+  tabs.forEach(function(tab, index){
+    tab.addEventListener('click', function(){ activateTab(tab, false); });
+    tab.addEventListener('keydown', function(event){
+      var next = null;
+      if (event.key === 'ArrowRight') next = tabs[(index + 1) % tabs.length];
+      else if (event.key === 'ArrowLeft') next = tabs[(index - 1 + tabs.length) % tabs.length];
+      else if (event.key === 'Home') next = tabs[0];
+      else if (event.key === 'End') next = tabs[tabs.length - 1];
+      if (next) { event.preventDefault(); activateTab(next, true); }
+    });
+  });
+})();
+</script>
 </body>
-</html
+</html>
