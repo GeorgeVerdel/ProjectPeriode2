@@ -1,0 +1,32 @@
+body {
+    background-color: rgb(105, 94, 81);
+    margin: 0;
+    padding: 0;
+    padding-top: 130px; 
+}
+
+.Nav {
+    background-color: rgb(135, 122, 122);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 0px 0px 20px 20px;
+    border-bottom: 4px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    box-shadow: 0 4px 10px black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Nav h1 {
+    margin: 0;
+    font-size: 75px;
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-align: center;
+    letter-spacing: 2px;
+}
